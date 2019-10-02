@@ -2,6 +2,17 @@ openapi: '3.0.0'
 info:
   title: Chat API
   version: "2.7"
+  description: |
+    This feature introduces the concept of applications to the Chat API.
+    
+    Applications are an abstraction that are defined by you.
+    In the beginning they allow you to configure for which channel you 
+    want to receive which events on which webhook.
+    
+    The application concept will be later introduced on the message requests
+    as well to remove the need for setting the _from_ on the selected delivery 
+    channels. As well as an override, if it is set.
+    
 servers:
   - url: https://api.tyntec.com/chat-api/v2
 security:
