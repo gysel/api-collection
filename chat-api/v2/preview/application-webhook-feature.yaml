@@ -1,0 +1,191 @@
+openapi: '3.0.0'
+info:
+  title: Chat API
+  version: "2.7"
+servers:
+  - url: https://api.tyntec.com/chat-api/v2
+security:
+  - ApiKeyAuth: []
+paths:
+  /applications:
+    get:
+      description: Returns all configured applications
+      responses:
+        200:
+          description: Applications belonging to you
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Applications'
+    post:
+      description: Creates a new application
+      requestBody:
+        description: The specification of the application
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Application'
+      responses:
+        202:
+          description: Application is created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+          
+  /applications/{application-id}:
+    parameters:
+      - $ref: '#/components/parameters/ApplicationId'
+    get:
+      responses:
+        202:
+          description: Application is created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+    put:
+      description: Updates the application
+      requestBody:
+        description: The new specification of the application
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Application'
+      responses:
+        202:
+          description: Application is updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+    delete:
+      description: Removes the application
+      responses:
+        204:
+          description: Application is removed
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: apikey
+      description: |
+        The API key used for this operation. We check as well that the API key has the phone number
+        (either on sending messages or interacting with other phone number based features) assigned.
+  parameters:
+    ApplicationId:
+      name: application-id
+      in: path
+      required: true
+      description: Application id
+      schema:
+        type: string
+        format: uuid
+        example: 77185196-664a-43ec-b14a-fe97036c697f
+  schemas:
+    Applications:
+      type: object
+      description: all configured applications
+      required: 
+       - applications
+      properties:
+        applications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Application'
+    Application:
+      type: object
+      description: An application
+      required:
+        - applicationId
+        - applicationName
+        - channels
+        - webhooks
+        - enabled
+      properties:
+        applicationId:
+          type: string
+          format: uuid
+          readOnly: true
+        applicationName:
+          type: string
+          description: Name for the application
+        enabled:
+          type: boolean
+          description: Indicates if the application is currently enabled
+          default: true
+        channels:
+          type: array
+          minItems: 0
+          description: |
+            Channels assigned to the application.
+            
+            If no channel is set, the application is treated as a catch-em all or default application.
+          items:
+            $ref: '#/components/schemas/Channel'
+          default: []
+        webhooks:
+          type: array
+          description: The webhooks to be addressed
+          items:
+            $ref: '#/components/schemas/Webhook'
+          minItems: 1
+    Channel:
+      type: object
+      description: |
+        A Channel (pair of channelType and from) can only be assigned to exactly one application.
+      required: 
+       - channelType
+       - from
+      properties:
+        channelType:
+          type: string
+          enum:
+            - whatsapp
+            - sms
+            - tyntecEcho
+        from:
+          type: string
+    Webhook:
+      type: object
+      required: 
+        - events
+        - callbackURL
+      properties:
+        events:
+          type: array
+          description: |
+            Selection of events belonging to a webhook.
+            
+            For a given application the events must be uniquely assigned to a webhook.
+            
+            If empty, all events that are not explicitly configured will be sent to this webhook
+          items:
+            type: string
+            enum:
+              - MessageStatus::ANY
+              - MessageStatus::accepted
+              - MessageStatus::delivered
+              - MessageStatus::seen
+              - MessageStatus::failed
+              - MessageStatus::channelFailed
+              - MessageStatus::unknown
+              - MessageStatus::deleted
+              - MoMessage
+              - WhatsAppGroupEvent::ANY
+              - WhatsAppGroupEvent::userJoined
+              - WhatsAppGroupEvent::userLeft
+              - WhatsAppGroupEvent::subjectChanged
+              - WhatsAppGroupEvent::descriptionChanged
+          default: []
+          minItems: 0
+        callbackURL:
+          type: string
+          pattern: ^https:\/\/?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$
+          description: To which webhook should the matching events be sent
+          example:
+            https://en4u5fpprib5i.x.pipedream.net
+            
