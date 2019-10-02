@@ -6,12 +6,17 @@ info:
     This feature introduces the concept of applications to the Chat API.
     
     Applications are an abstraction that are defined by you.
-    In the beginning they allow you to configure for which channel you 
+    In the beginning they allow you to configure for which set of channels you 
     want to receive which events on which webhook.
     
-    The application concept will be later introduced on the message requests
-    as well to remove the need for setting the _from_ on the selected delivery 
-    channels. As well as an override, if it is set.
+    Each channel - as a combination of _channel type_ and _from_ - can only be
+    used by exactly **one** application. We need this restriction in order to 
+    guarante that we can resolve in all cases the correct application.
+    
+    The application concept will be introduced on the message requests also, to 
+    have allow complete routings of all events to the right webhooks.
+    
+    The application id is transferred back on all events send out.
     
 servers:
   - url: https://api.tyntec.com/chat-api/v2
