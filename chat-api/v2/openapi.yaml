@@ -251,6 +251,74 @@ paths:
           $ref: '#/components/responses/MessageIdUnknown'
         default:
           $ref: '#/components/responses/Default'
+  /channels/whatsapp/accounts:
+    get:
+      operationId: listAllWhatsAppAccounts
+      summary: List WhatsApp accounts
+      description: List all WhatsApp accounts assigned to the account
+      responses:
+        200:
+          description: WhatsApp accounts assigned to the account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhatsAppAccounts'
+        default:
+          $ref: '#/components/responses/Default'
+  /channels/whatsapp/accounts/{whatsapp-account-id}:
+    parameters:
+      - $ref: '#/components/parameters/WhatsAppAccountId'
+    get:
+      operationId: getWhatsAppAccount
+      summary: Retrieve WhatsApp account
+      description: Get WhatsApp accounts assigned to the account
+      responses:
+        200:
+          description: WhatsApp accounts assigned to the account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhatsAppAccount'
+        404:
+          $ref: '#/components/responses/WhatsAppAccountUnknown'
+        default:
+          $ref: '#/components/responses/Default'
+  /channels/whatsapp/accounts/{whatsapp-account-id}/phone-numbers:
+    parameters:
+      - $ref: '#/components/parameters/WhatsAppAccountId'
+    get:
+      operationId: listPhoneNumbersOfWhatsAppAccount
+      summary: List WA account phone numbers
+      description: List all phone numbers of a WhatsApp account
+      responses:
+        200:
+          description: Phone numbers of a WhatsApp account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhatsAppPhoneNumbers'
+        404:
+          $ref: '#/components/responses/WhatsAppAccountUnknown'
+        default:
+          $ref: '#/components/responses/Default'
+  /channels/whatsapp/accounts/{whatsapp-account-id}/templates:
+    parameters:
+      - $ref: '#/components/parameters/WhatsAppAccountId'
+    get:
+      operationId: listTemplatesOfWhatsAppAccount
+      summary: List WA account templates
+      description: List all templates of a WhatsApp account
+      responses:
+        200:
+          description: Templates of a WhatsApp account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhatsAppTemplates'
+        404:
+          $ref: '#/components/responses/WhatsAppAccountUnknown'
+        default:
+          $ref: '#/components/responses/Default'
   /channels/whatsapp/phone-numbers:
     get:
       operationId: listAllWhatsAppPhoneNumbers
@@ -758,6 +826,15 @@ components:
             status: 400
             title: Updating profile failed
             code: 1009
+    WhatsAppAccountUnknown:
+      description: The WhatsApp account does not exists
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            status: 404
+            title: WhatsApp account unknown
     PhoneNumberUnknown:
       description: The phone number does not exists
       content:
@@ -855,6 +932,15 @@ components:
         minLength: 4
         maxLength: 15
       example: 4923147790717
+    WhatsAppAccountId:
+      name: whatsapp-account-id
+      in: path
+      required: true
+      description: WhatsApp account id
+      schema:
+        type: integer
+        format: int64
+      example: 132923147790717
   schemas:
     MessageRequest:
       type: object
@@ -2477,6 +2563,20 @@ components:
           - https://api.tyntec.com/reference
         vertical: Professional Services
         about: Hey there! I am using WhatsApp.
+    WhatsAppAccounts:
+      type: array
+      items:
+        $ref: '#/components/schemas/WhatsAppAccount'
+    WhatsAppAccount:
+      type: object
+      properties:
+        whatsAppAccountId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        templateNamespace:
+          type: string
     WhatsAppPhoneNumbers:
       type: array
       items:
