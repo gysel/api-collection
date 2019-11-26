@@ -2494,6 +2494,11 @@ components:
           type: string
         status:
           type: string
+        templateNamespace:
+          type: string
+        whatsAppAccountId:
+          type: integer
+          format: int64
     WhatsAppTemplates:
       type: array
       items:
@@ -2531,10 +2536,10 @@ components:
           type: array
           items:
             anyOf:
-              - $ref: '#/components/schemas/WhatsAppTemplateHeaderComponent'
-              - $ref: '#/components/schemas/WhatsAppTemplateBodyComponent'
-              - $ref: '#/components/schemas/WhatsAppTemplateFooterComponent'
-    WhatsAppTemplateHeaderComponent:
+              - $ref: '#/components/schemas/WhatsAppTemplateHeaderComponentResponse'
+              - $ref: '#/components/schemas/WhatsAppTemplateBodyComponentResponse'
+              - $ref: '#/components/schemas/WhatsAppTemplateFooterComponentResponse'
+    WhatsAppTemplateHeaderComponentResponse:
       type: object
       properties:
         type:
@@ -2546,7 +2551,7 @@ components:
           enum:
             - IMAGE
             - DOCUMENT
-    WhatsAppTemplateBodyComponent:
+    WhatsAppTemplateBodyComponentResponse:
       type: object
       properties:
         type:
@@ -2555,7 +2560,7 @@ components:
             - BODY
         text:
           type: string
-    WhatsAppTemplateFooterComponent:
+    WhatsAppTemplateFooterComponentResponse:
       type: object
       properties:
         type:
