@@ -8,9 +8,9 @@ info:
     In addition you can define a chain of channels which will be used for messaging attempts until one succeeds.
 
     Notifications and messages from your users are send by us to your system via HTTP ```POST``` method.
-    
+
     **Channel specific pre-conditions**
-    
+
     - *2-way SMS* : Please contact us to get the details for the 2-way SMS setup
     - *WhatsApp* : A WhatsApp Business Account is required in order to use this channel. Please [request access here](https://www.tyntec.com/form-whatsapp-request-your-access)
 
@@ -86,19 +86,19 @@ tags:
     description: |
       The WA Settings management enables you to change the following settings of 
       your WhatsApp instance
-      
+
       - logo
       - profile information
-      
+
       Profile information consists of
-      
+
       - company address
       - description
       - contact email
       - business category
       - websites
       - about
-      
+
 paths:
   /messages:
     post:
@@ -249,6 +249,54 @@ paths:
                 $ref: '#/components/schemas/MessageStatus'
         404:
           $ref: '#/components/responses/MessageIdUnknown'
+        default:
+          $ref: '#/components/responses/Default'
+  /channels/whatsapp/phone-numbers:
+    get:
+      operationId: listAllWhatsAppPhoneNumbers
+      summary: Lists phone numbers
+      description: Lists all phone numbers accessible for the given credentials
+
+      responses:
+        200:
+          description: Phone numbers assigned to the account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhatsAppPhoneNumbers'
+        default:
+          $ref: '#/components/responses/Default'
+  /channels/whatsapp/phone-numbers/{phone-number}:
+    get:
+      operationId: getWhatsAppPhoneNumber
+      summary: Get one phone number
+      description: Retrieves information about the phone number
+
+      responses:
+        200:
+          description: Information about the phone number
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhatsAppPhoneNumber'
+        404:
+          $ref: '#/components/responses/PhoneNumberUnknown'
+        default:
+          $ref: '#/components/responses/Default'
+  /channels/whatsapp/phone-numbers/{phone-number}/templates:
+    get:
+      operationId: getAvailableWhatsAppTemplates
+      summary: List available templates
+      description: Lists all available templates for a phone number
+      responses:
+        200:
+          description: Available templates for a phone number
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhatsAppTemplates'
+        404:
+          $ref: '#/components/responses/PhoneNumberUnknown'
         default:
           $ref: '#/components/responses/Default'
   /channels/whatsapp/phone-numbers/{phone-number}/groups:
@@ -584,10 +632,10 @@ paths:
       operationId: updateCurrentWAProfile
       summary: Update the profile
       description: |
-        Updates the WhatsApp client profile. 
-        
+        Updates the WhatsApp client profile.
+
         Supports also selective updates.
-        
+
         Removal of an information is done by setting its value to an empty
         string.
       tags:
@@ -640,11 +688,11 @@ paths:
     put:
       operationId: updateCurrentWALogo
       summary: Update the logo
-      description: | 
+      description: |
         Updates the logo
-        
+
         The logo must have a minimal edge size of 500 pixel and must not exceed 5 MB in size.
-        
+
         Recommended size is 640x640 pixel
       tags:
         - "WA Settings management"
@@ -703,7 +751,7 @@ components:
             allOf:
               - $ref: '#/components/schemas/Problem'
             properties:
-              code: 
+              code:
                 type : string
                 description: error code
           example:
@@ -1237,7 +1285,7 @@ components:
         parameters:
           description: |
             Parameter for replacement in the template.
-            
+
             **NOTE** : This parameter is deprecated by version 2.7 and will be removed in the next major release.
             Instead use components.
           deprecated: true
@@ -1295,7 +1343,7 @@ components:
           - more then 4 consecutive spaces.
 
         It can be formatted accordingly to [Formatting your messages](https://faq.whatsapp.com/en/android/26000002/?fbclid=IwAR1-VtKzKAxleQD-nnWbZpIhLtkNY6Hpjjb4echlEmcfLV2l0C5We4HnsUM).
-        
+
         **NOTE** : This parameter is deprecated by version 2.7 and will be removed in the next major release.
             Instead use components.
       properties:
@@ -2396,23 +2444,23 @@ components:
         vertical:
           type: string
           enum:
-           - Automotive
-           - Beauty, Spa and Salon
-           - Clothing and Apparel
-           - Education
-           - Entertainment
-           - Event Planning and Service
-           - Finance and Banking
-           - Food and Grocery
-           - Public Service
-           - Hotel and Lodging
-           - Medical and Health
-           - Non-profit
-           - Professional Services
-           - Shopping and Retail
-           - Travel and Transportation
-           - Restaurant
-           - Other
+            - Automotive
+            - Beauty, Spa and Salon
+            - Clothing and Apparel
+            - Education
+            - Entertainment
+            - Event Planning and Service
+            - Finance and Banking
+            - Food and Grocery
+            - Public Service
+            - Hotel and Lodging
+            - Medical and Health
+            - Non-profit
+            - Professional Services
+            - Shopping and Retail
+            - Travel and Transportation
+            - Restaurant
+            - Other
           description: Industry of the business
           example: Professional Services
         about:
@@ -2429,3 +2477,90 @@ components:
           - https://api.tyntec.com/reference
         vertical: Professional Services
         about: Hey there! I am using WhatsApp.
+    WhatsAppPhoneNumbers:
+      type: array
+      items:
+        $ref: '#/components/schemas/WhatsAppPhoneNumber'
+    WhatsAppPhoneNumber:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+        displayPhoneNumber:
+          type: string
+        verifiedName:
+          type: string
+        qualityRating:
+          type: string
+        status:
+          type: string
+    WhatsAppTemplates:
+      type: array
+      items:
+        $ref: '#/components/schemas/WhatsAppTemplateResponse'
+    WhatsAppTemplateResponse:
+      type: object
+      properties:
+        whatsAppAccountId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        category:
+          type: string
+        localízations:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizationResponse'
+    LocalizationResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        whatsAppTemplateId:
+          type: integer
+          format: int64
+        status:
+          type: string
+        rejectionReason:
+          type: string
+        language:
+          type: string
+        components:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/WhatsAppTemplateHeaderComponent'
+              - $ref: '#/components/schemas/WhatsAppTemplateBodyComponent'
+              - $ref: '#/components/schemas/WhatsAppTemplateFooterComponent'
+    WhatsAppTemplateHeaderComponent:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - HEADER
+        format:
+          type: string
+          enum:
+            - IMAGE
+            - DOCUMENT
+    WhatsAppTemplateBodyComponent:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - BODY
+        text:
+          type: string
+    WhatsAppTemplateFooterComponent:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - FOOTER
+        text:
+          type: string
