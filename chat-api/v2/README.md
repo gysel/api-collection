@@ -1,5 +1,39 @@
 # Release notes
 
+## 2.8
+
+This releases introduces the possibility to fetch information about the WhatsApp Business Account including it's Message Templates and PhoneNumbers.
+
+### Features
+
+#### Read WhatsApp Business Account information
+
+You can now fetch information about all WhatsApp Business Accounts available to your API key.
+
+This information provides in this release
+
+ - the name reflecting your WhatsApp Business Account and
+ - the template namespace
+
+#### Read Template information
+
+You can now fetch information about templates available to a phone number as well to your WhatsApp Business Account.
+
+The template provides information about
+ 
+ - name and category 
+ - localizations including status and rejection reason
+
+#### Read Phone Number information
+
+You can now fetch information about phone numbers available to your WhatsApp Business Account.
+
+The information includes
+
+ - verified name
+ - status
+ - quality rating
+
 ## 2.7
 
 This release introduces rich media notifications to the WhatsApp API as well the support of the read indicator.
