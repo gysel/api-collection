@@ -335,6 +335,8 @@ paths:
         default:
           $ref: '#/components/responses/Default'
   /channels/whatsapp/phone-numbers/{phone-number}:
+    parameters:
+      - $ref: '#/components/parameters/PhoneNumber'
     get:
       operationId: getWhatsAppPhoneNumber
       summary: Get one phone number
@@ -352,6 +354,8 @@ paths:
         default:
           $ref: '#/components/responses/Default'
   /channels/whatsapp/phone-numbers/{phone-number}/templates:
+    parameters:
+      - $ref: '#/components/parameters/PhoneNumber'
     get:
       operationId: getAvailableWhatsAppTemplates
       summary: List available templates
@@ -2500,6 +2504,8 @@ components:
           - 491672634673
     WhatsAppProfile:
       type: object
+      description: |
+        The current profile of a WhatsApp number.
       properties:
         address:
           type: string
@@ -2565,107 +2571,399 @@ components:
         about: Hey there! I am using WhatsApp.
     WhatsAppAccounts:
       type: array
+      description: List of WhatsApp Business Accounts. Might be empty
       items:
         $ref: '#/components/schemas/WhatsAppAccount'
     WhatsAppAccount:
       type: object
+      description: A WhatsApp Business Account
+      required:
+        - whatsAppAccountId
       properties:
         whatsAppAccountId:
           type: integer
+          description: Id of the WhatsApp Business Account
           format: int64
+          example:
+            12312
         name:
           type: string
+          description: Name of the WhatsApp Business Account
+          example:
+            swagger_sample
         templateNamespace:
+          description: |
+            Template namespace assigned to the WhatsApp Business Account.
+
+            This is used internally and here stated for completeness
           type: string
+          example:
+            c9468969-a3a3-4c17-95f7-1e8b2902ed74
+      example:
+        whatsAppAccountId: 12312
+        name: swagger_sample
+        templateNamespace: c9468969-a3a3-4c17-95f7-1e8b2902ed74
     WhatsAppPhoneNumbers:
       type: array
+      description: List of phone numbers at WhatsApp. Might be empty
       items:
         $ref: '#/components/schemas/WhatsAppPhoneNumber'
     WhatsAppPhoneNumber:
       type: object
+      description: A phone number assigned to a WhatsApp Business Account
       properties:
         phoneNumber:
           type: string
+          description: The phone number
+          example:
+            49123456789
         displayPhoneNumber:
           type: string
+          description: The phone number as it is displayed on the app
+          example:
+            +49 123 456789
         verifiedName:
           type: string
+          description: |
+            The name shown aside to the number.
+
+            This name will be shown immediately for Official Business Accounts
+          example:
+            Swagger Sample
         qualityRating:
           type: string
+          description: |
+            Whats the current quality rating of phone number
+
+            A RED rating will lead to status flagged if the number still receives
+            negative feedback from the users.
+          enum:
+            - GREEN
+            - RED
+            - YELLOW
+          example:
+            GREEN
         status:
           type: string
+          description: Status of the number
+          enum:
+            - CONNECTED
+            - PENDING
+            - FLAGGED
+            - RESTRICTED
+            - OFFLINE
+          example:
+            CONNECTED
         templateNamespace:
           type: string
+          description: |
+            Template namespace available for this phone number
+
+            This is used internally and here stated for completeness
+          example:
+            c9468969-a3a3-4c17-95f7-1e8b2902ed74
         whatsAppAccountId:
           type: integer
+          description: Id of the WhatsApp Business Account the number belongs to.
           format: int64
+          example:
+            12312
+      example:
+        phoneNumber: 4912345678
+        displayPhonenumber: +49 123 45678
+        verifiedName: Swagger Sample
+        qualityRating: YELLOW
+        status: FLAGGED
+        templateNamespace: c9468969-a3a3-4c17-95f7-1e8b2902ed74
+        whatsAppAccountId: 12312
     WhatsAppTemplates:
       type: array
+      description: List of WhatsApp templates
       items:
         $ref: '#/components/schemas/WhatsAppTemplateResponse'
     WhatsAppTemplateResponse:
       type: object
+      description: WhatsApp template
       properties:
         whatsAppAccountId:
           type: integer
+          description: Id of the WhatsApp Business Account the template belongs to.
           format: int64
+          example:
+            12312
         name:
           type: string
+          description: Name of the template
+          example:
+            swagger_test
         category:
           type: string
+          description: Category of the template
+          enum:
+            - ACCOUNT_UPDATE
+            - ALERT_UPDATE
+            - APPOINTMENT_UPDATE
+            - AUTO_REPLY
+            - ISSUE_RESOLUTION
+            - PAYMENT_UPDATE
+            - PERSONAL_FINANCE_UPDATE
+            - RESERVATION_UPDATE
+            - SHIPPING_UPDATE
+            - TICKET_UPDATE
+            - TRANSPORTATION_UPDATE
+          example:
+            TICKET_UPDATE
         localízations:
           type: array
+          description: List of localizations of this templates
           items:
             $ref: '#/components/schemas/LocalizationResponse'
+          example:
+            status: REJECTED
+            rejectionReason: For this example
+            language: en
+            components:
+              - type: BODY
+                text: Hello {{1}}! How is going?
+              - type: FOOTER
+                text: Your specification team!
+      example:
+        whatsAppAccountId: 12312
+        name: swagger_test
+        category: TICKET_UPDATE
+        localizations:
+          - status: REJECTED
+            rejectionReason: For this example
+            language: en
+            components:
+              - type: BODY
+                text: Hello {{1}}! How is going?
+              - type: FOOTER
+                text: Your specification team!
     LocalizationResponse:
       type: object
+      description: Localization of a template
+      required:
+        - status
+        - language
+        - components
       properties:
-        id:
-          type: integer
-          format: int64
-        whatsAppTemplateId:
-          type: integer
-          format: int64
         status:
           type: string
+          description: Determines in which status the localization is
+          enum:
+            - requested
+            - PENDING
+            - APPROVED
+            - REJECTED
+          example:
+            APPROVED
         rejectionReason:
           type: string
+          description: Descriptive text in case of status REJECTED
+          example:
+            not yet
         language:
-          type: string
+          $ref: '#/components/schemas/LanguageCode'
         components:
           type: array
+          description: Set of components defining a template
           items:
             anyOf:
               - $ref: '#/components/schemas/WhatsAppTemplateHeaderComponentResponse'
               - $ref: '#/components/schemas/WhatsAppTemplateBodyComponentResponse'
               - $ref: '#/components/schemas/WhatsAppTemplateFooterComponentResponse'
+          example:
+            - type: BODY
+              text: Hello {{1}}! How is going?
     WhatsAppTemplateHeaderComponentResponse:
       type: object
+      description: Header component of a template
+      required:
+        - type
+        - format
       properties:
         type:
           type: string
+          description: Determines the type of the component
           enum:
             - HEADER
         format:
           type: string
+          description: Which kind of header
           enum:
             - IMAGE
             - DOCUMENT
+          example:
+            IMAGE
     WhatsAppTemplateBodyComponentResponse:
       type: object
+      description: Body component of a template
+      required:
+        - type
+        - text
       properties:
         type:
           type: string
+          description: Determines the type of the component
           enum:
             - BODY
         text:
           type: string
+          description: Specification of the body text
+          example:
+            Hi {{1}}! Enjoy the spec!
     WhatsAppTemplateFooterComponentResponse:
       type: object
+      description: Footer component of a template
+      required:
+        - type
+        - text
       properties:
         type:
           type: string
+          description: Determines the type of the component
           enum:
             - FOOTER
         text:
           type: string
+          description: Specification of the footer text
+          example:
+            The specification team
+    LanguageCode:
+      type: string
+      description: |
+        Supported language codes
+        * `af` - Afrikaans
+        * `sq` - Albanian
+        * `ar` - Arabic
+        * `az` - Azerbaijani
+        * `bn` - Bengali
+        * `bg` - Bulgarian
+        * `ca` - Catalan
+        * `zh_CN` - Chinese (CHN)
+        * `zh_HK` - Chinese (HKG)
+        * `zh_TW` - Chinese (TAI)
+        * `hr` - Croatian
+        * `cs` - Czech
+        * `da` - Danish
+        * `nl` - Dutch
+        * `en` - English
+        * `en_GB` - English (UK)
+        * `en_US` - English (US)
+        * `et` - Estonian
+        * `fil` - Filipino
+        * `fi` - Finnish
+        * `fr` - French
+        * `de` - German
+        * `el` - Greek
+        * `gu` - Gujarati
+        * `he` - Hebrew
+        * `hi` - Hindi
+        * `hu` - Hungarian
+        * `id` - Indonesian
+        * `ga` - Irish
+        * `it` - Italian
+        * `ja` - Japanese
+        * `kn` - Kannada
+        * `kk` - Kazakh
+        * `ko` - Korean
+        * `lo` - Lao
+        * `lv` - Latvian
+        * `lt` - Lithuanian
+        * `mk` - Macedonian
+        * `ms` - Malay
+        * `mr` - Marathi
+        * `nb` - Norwegian
+        * `fa` - Persian
+        * `pl` - Polish
+        * `pt_BR` - Portuguese (BR)
+        * `pt_PT` - Portuguese (POR)
+        * `pa` - Punjabi
+        * `ro` - Romanian
+        * `ru` - Russian
+        * `sr` - Serbian
+        * `sk` - Slovak
+        * `sl` - Slovenian
+        * `es` - Spanish
+        * `es_AR` - Spanish (ARG)
+        * `es_ES` - Spanish (SPA)
+        * `es_MX` - Spanish (MEX)
+        * `sw` - Swahili
+        * `sv` - Swedish
+        * `ta` - Tamil
+        * `te` - Telugu
+        * `th` - Thai
+        * `tr` - Turkish
+        * `uk` - Ukrainian
+        * `ur` - Urdu
+        * `uz` - Uzbek
+        * `vi` - Vietnamese
+      enum:
+        - af
+        - sq
+        - ar
+        - az
+        - bn
+        - bg
+        - ca
+        - zh_CN
+        - zh_HK
+        - zh_TW
+        - hr
+        - cs
+        - da
+        - nl
+        - en
+        - en_GB
+        - en_US
+        - et
+        - fil
+        - fi
+        - fr
+        - de
+        - el
+        - gu
+        - he
+        - hi
+        - hu
+        - id
+        - ga
+        - it
+        - ja
+        - kn
+        - kk
+        - ko
+        - lo
+        - lv
+        - lt
+        - mk
+        - ms
+        - mr
+        - nb
+        - fa
+        - pl
+        - pt_BR
+        - pt_PT
+        - pa
+        - ro
+        - ru
+        - sr
+        - sk
+        - sl
+        - es
+        - es_AR
+        - es_ES
+        - es_MX
+        - sw
+        - sv
+        - ta
+        - te
+        - th
+        - tr
+        - uk
+        - ur
+        - uz
+        - vi
+      example:
+        en
