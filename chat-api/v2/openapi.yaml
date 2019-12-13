@@ -2903,10 +2903,13 @@ components:
           type: string
           description: Determines in which status the localization is
           enum:
-            - requested
+            - REQUESTED
+            - SUBMIT_FAILED
             - PENDING
             - APPROVED
             - REJECTED
+            - DELETE_PENDING
+            - DELETED
           example:
             APPROVED
         rejectionReason:
@@ -2927,6 +2930,12 @@ components:
           example:
             - type: BODY
               text: Hello {{1}}! How is going?
+        lastUpdated:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
     WhatsAppTemplateHeaderComponentResponse:
       type: object
       description: Header component of a template
