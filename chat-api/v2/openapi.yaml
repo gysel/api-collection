@@ -98,7 +98,15 @@ tags:
       - business category
       - websites
       - about
-
+  - name: "WA Account management"
+    description: |
+      Here you can find infos about your account
+  - name: "WA template management"
+    description: |
+      Here you can manage your templates
+  - name: "WA phone number insights"
+    description: |
+      Here you can find information about your phone numbers
 paths:
   /messages:
     post:
@@ -255,6 +263,8 @@ paths:
     get:
       operationId: listAllWhatsAppAccounts
       summary: List WhatsApp accounts
+      tags:
+        - "WA Account management"
       description: List all WhatsApp accounts managed by this access credentials
       responses:
         200:
@@ -271,6 +281,8 @@ paths:
     get:
       operationId: getWhatsAppAccount
       summary: Retrieve WhatsApp account
+      tags:
+        - "WA Account management"
       description: Get WhatsApp account
       responses:
         200:
@@ -289,6 +301,8 @@ paths:
     get:
       operationId: listPhoneNumbersOfWhatsAppAccount
       summary: List WA account phone numbers
+      tags:
+        - "WA Account management"
       description: List all phone numbers of a WhatsApp account
       responses:
         200:
@@ -307,6 +321,8 @@ paths:
     get:
       operationId: listTemplatesOfWhatsAppAccount
       summary: List WA account templates
+      tags:
+        - "WA template management"
       description: List all templates of a WhatsApp account
       responses:
         200:
@@ -329,6 +345,8 @@ paths:
               $ref: '#/components/schemas/WhatsAppTemplateRequests'
       operationId: requestNewTemplates
       summary: Request new templates
+      tags:
+        - "WA template management"
       description: Requests new templates for this WA account
       responses:
         204:
@@ -342,6 +360,8 @@ paths:
       - $ref: '#/components/parameters/WhatsAppAccountId'
       - $ref: '#/components/parameters/TemplateName'
     get:
+      tags:
+        - "WA template management"
       responses:
         200:
           description: Specified template of the account
@@ -354,6 +374,8 @@ paths:
         default:
           $ref: '#/components/responses/Default'
     delete:
+      tags:
+        - "WA template management"
       responses:
         204:
           description: Deletion of the template is pendind now
@@ -364,6 +386,8 @@ paths:
 
   /channels/whatsapp/phone-numbers:
     get:
+      tags:
+        - "WA phone number insights"
       operationId: listAllWhatsAppPhoneNumbers
       summary: Lists phone numbers
       description: Lists all phone numbers accessible for the given credentials
@@ -383,6 +407,8 @@ paths:
     get:
       operationId: getWhatsAppPhoneNumber
       summary: Get one phone number
+      tags:
+        - "WA phone number insights"
       description: Retrieves information about the phone number
 
       responses:
@@ -402,6 +428,8 @@ paths:
     get:
       operationId: getAvailableWhatsAppTemplates
       summary: List available templates
+      tags:
+        - "WA phone number insights"
       description: Lists all available templates for a phone number
       responses:
         200:
