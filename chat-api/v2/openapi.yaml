@@ -255,10 +255,10 @@ paths:
     get:
       operationId: listAllWhatsAppAccounts
       summary: List WhatsApp accounts
-      description: List all WhatsApp accounts assigned to the account
+      description: List all WhatsApp accounts managed by this access credentials
       responses:
         200:
-          description: WhatsApp accounts assigned to the account
+          description: WhatsApp accounts managed by this access credentials
           content:
             application/json:
               schema:
@@ -271,10 +271,10 @@ paths:
     get:
       operationId: getWhatsAppAccount
       summary: Retrieve WhatsApp account
-      description: Get WhatsApp accounts assigned to the account
+      description: Get WhatsApp account
       responses:
         200:
-          description: WhatsApp accounts assigned to the account
+          description: WhatsApp account
           content:
             application/json:
               schema:
@@ -319,6 +319,49 @@ paths:
           $ref: '#/components/responses/WhatsAppAccountUnknown'
         default:
           $ref: '#/components/responses/Default'
+    post:
+      requestBody:
+        description: New templates
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WhatsAppTemplateRequests'
+      operationId: requestNewTemplates
+      summary: Request new templates
+      description: Requests new templates for this WA account
+      responses:
+        204:
+          description: Accepted
+        404:
+          $ref: '#/components/responses/WhatsAppAccountUnknown'
+        default:
+          $ref: '#/components/responses/Default'
+  /channels/whatsapp/accounts/{whatsapp-account-id}/templates/{template-name}:
+    parameters:
+      - $ref: '#/components/parameters/WhatsAppAccountId'
+      - $ref: '#/components/parameters/TemplateName'
+    get:
+      responses:
+        200:
+          description: Specified template of the account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhatsAppTemplateResponse'
+        404:
+          $ref: '#/components/responses/WhatsAppAccountUnknown'
+        default:
+          $ref: '#/components/responses/Default'
+    delete:
+      responses:
+        204:
+          description: Deletion of the template is pendind now
+        404:
+          $ref: '#/components/responses/WhatsAppAccountUnknown'
+        default:
+          $ref: '#/components/responses/Default'
+
   /channels/whatsapp/phone-numbers:
     get:
       operationId: listAllWhatsAppPhoneNumbers
@@ -824,7 +867,7 @@ components:
               - $ref: '#/components/schemas/Problem'
             properties:
               code:
-                type : string
+                type: string
                 description: error code
           example:
             status: 400
@@ -942,9 +985,17 @@ components:
       required: true
       description: WhatsApp account id
       schema:
-        type: integer
-        format: int64
+        type: string
       example: 132923147790717
+    TemplateName:
+      name: template-name
+      in: path
+      required: true
+      description: Referenced template
+      schema:
+        type: string
+        pattern: "[a-z_0-9]+"
+      example: welcome_message
   schemas:
     MessageRequest:
       type: object
@@ -2247,7 +2298,7 @@ components:
         currency:
           type: string
           description: The currency in which the pricing is given; corresponding to the currency of the invoice.
-          example : EUR
+          example: EUR
         priceEffective:
           type: string
           description: The date when the “price” became effective.
@@ -2676,6 +2727,121 @@ components:
         status: FLAGGED
         templateNamespace: c9468969-a3a3-4c17-95f7-1e8b2902ed74
         whatsAppAccountId: 12312
+    WhatsAppTemplateRequests:
+      type: array
+      description: List of newly created WhatsApp templates or additional languages for existing templates
+      items:
+        $ref: '#/components/schemas/WhatsAppTemplateRequest'
+    WhatsAppTemplateRequest:
+      type: object
+      description: Definition of additional WhatsApp Template
+      properties:
+        name:
+          type: string
+        category:
+          $ref: '#/components/schemas/TemplateCategory'
+        localizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocalizationRequest'
+    LocalizationRequest:
+      type: object
+      description: Request of a localization of a template
+      properties:
+        language:
+          $ref: '#/components/schemas/LanguageCode'
+        components:
+          oneOf:
+            - $ref: '#/components/schemas/NotificationTemplateRequest'
+            - $ref: '#/components/schemas/RichMediaTemplateRequest'
+    NotificationTemplateRequest:
+      type: array
+      items:
+        type: object
+        description: Standard template request without rich media parts
+        required:
+          - type
+          - text
+        properties:
+          type:
+            type: string
+            enum:
+              - BODY
+            default:
+              - BODY
+          text:
+            type: string
+            description: |
+              Template text.
+            maxLength: 1024
+            minLength: 1
+      maxLength: 1
+      minLength: 1
+    RichMediaTemplateRequest:
+      type: array
+      items:
+        anyOf:
+        - $ref: '#/components/schemas/WhatsAppTemplateHeaderComponentRequest'
+        - $ref: '#/components/schemas/WhatsAppTemplateBodyComponentRequest'
+        - $ref: '#/components/schemas/WhatsAppTemplateFooterComponentRequest'
+    WhatsAppTemplateHeaderComponentRequest:
+      type: object
+      description: Header component of a template
+      required:
+        - type
+        - format
+      properties:
+        type:
+          type: string
+          description: Determines the type of the component
+          enum:
+            - HEADER
+        format:
+          type: string
+          description: Which kind of header
+          enum:
+            - IMAGE
+            - DOCUMENT
+          example:
+            IMAGE
+    WhatsAppTemplateBodyComponentRequest:
+      type: object
+      description: Body component of a template
+      required:
+        - type
+        - text
+      properties:
+        type:
+          type: string
+          description: Determines the type of the component
+          enum:
+            - BODY
+        text:
+          type: string
+          description: Specification of the body text
+          maxLength: 160
+          minLength: 1
+          example:
+            Hi {{1}}! Enjoy the spec!
+    WhatsAppTemplateFooterComponentRequest:
+      type: object
+      description: Footer component of a template
+      required:
+        - type
+        - text
+      properties:
+        type:
+          type: string
+          description: Determines the type of the component
+          enum:
+            - FOOTER
+        text:
+          type: string
+          description: Specification of the footer text
+          maxLength: 60
+          minLength: 1
+          example:
+            The specification team
     WhatsAppTemplates:
       type: array
       description: List of WhatsApp templates
@@ -2697,22 +2863,7 @@ components:
           example:
             swagger_test
         category:
-          type: string
-          description: Category of the template
-          enum:
-            - ACCOUNT_UPDATE
-            - ALERT_UPDATE
-            - APPOINTMENT_UPDATE
-            - AUTO_REPLY
-            - ISSUE_RESOLUTION
-            - PAYMENT_UPDATE
-            - PERSONAL_FINANCE_UPDATE
-            - RESERVATION_UPDATE
-            - SHIPPING_UPDATE
-            - TICKET_UPDATE
-            - TRANSPORTATION_UPDATE
-          example:
-            TICKET_UPDATE
+          $ref: '#/components/schemas/TemplateCategory'
         localízations:
           type: array
           description: List of localizations of this templates
@@ -2830,6 +2981,21 @@ components:
           description: Specification of the footer text
           example:
             The specification team
+    TemplateCategory:
+      type: string
+      description: Category of the template
+      enum:
+        - ACCOUNT_UPDATE
+        - ALERT_UPDATE
+        - APPOINTMENT_UPDATE
+        - AUTO_REPLY
+        - ISSUE_RESOLUTION
+        - PAYMENT_UPDATE
+        - PERSONAL_FINANCE_UPDATE
+        - RESERVATION_UPDATE
+        - SHIPPING_UPDATE
+        - TICKET_UPDATE
+        - TRANSPORTATION_UPDATE
     LanguageCode:
       type: string
       description: |
