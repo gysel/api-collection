@@ -622,6 +622,7 @@ paths:
             enum:
               - link
               - binary
+            default: binary
           description: Specifies how the logo should be returned
       operationId: getCurrentWALogo
       summary: Get the logo
