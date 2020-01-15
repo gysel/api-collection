@@ -614,14 +614,24 @@ paths:
     parameters:
       - $ref: '#/components/parameters/PhoneNumber'
     get:
+      parameters:
+        - in: query
+          name: format
+          schema:
+            type: string
+            enum:
+              - link
+              - binary
+          description: Specifies how the logo should be returned
       operationId: getCurrentWALogo
       summary: Get the logo
-      description: Returns the current logo
+      description: |
+        Returns the current logo
       tags:
         - "WA Settings management"
       responses:
         200:
-          description: Current logo
+          description: Current logo. Either as a binary or the public available url
           content:
             image/png:
               schema:
@@ -631,10 +641,19 @@ paths:
               schema:
                 type: string
                 format: binary
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhatsAppPictureLink'
         403:
           $ref: '#/components/responses/Forbidden'
         404:
-          $ref: '#/components/responses/PhoneNumberUnknown'
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/responses/PhoneNumberUnknown'
+                  - $ref: '#/components/responses/ProfileLogoNotSet'
         default:
           $ref: '#/components/responses/Default'
     put:
@@ -671,6 +690,29 @@ paths:
           $ref: '#/components/responses/PhoneNumberUnknown'
         default:
           $ref: '#/components/responses/Default'
+    delete:
+      summary: Removes the profiles logo
+      description: Removes the profiles logo. This can't be undone.
+      operationId: removeWALogo
+      responses:
+        204:
+          description: Logo successfully removed
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/responses/PhoneNumberUnknown'
+                  - $ref: '#/components/responses/ProfileLogoNotSet'
+        default:
+          $ref: '#/components/responses/Default'
+
+
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -737,6 +779,15 @@ components:
           example:
             status: 404
             title: Group id unknown
+    ProfileLogoNotSet:
+      description: The profile logo was not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+          example:
+            status: 404
+            title: No profile logo set
     BadRequest:
       description: The request does not match our expectations. Please check the Problems object for details
       content:
@@ -2429,3 +2480,11 @@ components:
           - https://api.tyntec.com/reference
         vertical: Professional Services
         about: Hey there! I am using WhatsApp.
+    WhatsAppPictureLink:
+      description: Public available link to a logo or icon on WhatsApp
+      type: object
+      properties:
+        link:
+          type: string
+          description: URL style link
+          example: https://pps.whatsapp.net/v/t61.24694-24/s96x96/75392936_135790474080373_1720133950269401985_n.jpg?oe=5E22A815&oh=ac2ac793a117a24f15f56de4e3c5b997
