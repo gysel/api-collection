@@ -335,26 +335,6 @@ paths:
           $ref: '#/components/responses/WhatsAppAccountUnknown'
         default:
           $ref: '#/components/responses/Default'
-    post:
-      requestBody:
-        description: New templates
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WhatsAppTemplateRequests'
-      operationId: requestNewTemplates
-      summary: Request new templates
-      tags:
-        - "WA template management"
-      description: Requests new templates for this WA account
-      responses:
-        204:
-          description: Accepted
-        404:
-          $ref: '#/components/responses/WhatsAppAccountUnknown'
-        default:
-          $ref: '#/components/responses/Default'
   /channels/whatsapp/accounts/{whatsapp-account-id}/templates/{template-name}:
     parameters:
       - $ref: '#/components/parameters/WhatsAppAccountId'
@@ -369,6 +349,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WhatsAppTemplateResponse'
+        404:
+          $ref: '#/components/responses/WhatsAppAccountUnknown'
+        default:
+          $ref: '#/components/responses/Default'
+    put:
+      tags:
+        - "WA template management"
+      requestBody:
+        description: |
+          Creates a new template or adds localizations for an existing template.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WhatsAppTemplateRequest'
+      responses:
+        204:
+          description: Template request accepted.
+        400:
+          $ref: '#/components/responses/BadRequest'
         404:
           $ref: '#/components/responses/WhatsAppAccountUnknown'
         default:
@@ -962,6 +962,7 @@ components:
             type: https://httpstatuses.com/403
             title: Forbidden
             status: 403
+
   parameters:
     GroupId:
       name: group-id
