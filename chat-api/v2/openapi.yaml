@@ -363,6 +363,9 @@ paths:
       - $ref: '#/components/parameters/WhatsAppAccountId'
       - $ref: '#/components/parameters/TemplateName'
     get:
+      operationId: waGetTemplate
+      summary: Get one template
+      description: Get one template
       tags:
         - "WA template management"
       responses:
@@ -377,6 +380,13 @@ paths:
         default:
           $ref: '#/components/responses/Default'
     delete:
+      operationId: waDeleteTemplate
+      summary: Delete a template
+      description: |
+        Deletes the template.
+
+        After deleting the template a 30 days grace period is starting.
+        This is indicated by the `expiresAt` property of the localizations
       tags:
         - "WA template management"
       responses:
@@ -391,6 +401,9 @@ paths:
       - $ref: '#/components/parameters/WhatsAppAccountId'
       - $ref: '#/components/parameters/TemplateName'
     get:
+      operationId: waListLocalizations
+      summary: List localizations of a template
+      description: List localizations of a template
       tags:
         - "WA template management"
       responses:
@@ -411,6 +424,8 @@ paths:
       summary: Add a localization
       operationId: waTemplateAddLocalization
       description: Adds a localizations to the template. Will be separately reviewed by Facebook
+      tags:
+        - "WA template management"
       requestBody:
         description: |
           The localization for review @ facebook
