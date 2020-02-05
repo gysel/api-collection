@@ -102,7 +102,7 @@ tags:
     description: |
       The WA Account management grants you access to information about the WhatsApp accounts
       provisioned for you.
-      
+
       At the moment it does not support requesting new WhatsApp accounts or editing existing ones.
 
       The WhatsApp account and it's subresources can *only* be managed by one of your CPaaS API Account.
@@ -112,9 +112,9 @@ tags:
   - name: "WA Template management"
     description: |
       The WA Template management enables you to interact with the templates defined for your WhatsApp account.
-      
+
       We support creating or deleting templates and adding new localizations to an existing template.
-      
+
       Due to restrictions by WhatsApp editing is not support yet.
   - name: "WA Phone Number management"
     description: |
