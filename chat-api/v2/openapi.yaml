@@ -2739,11 +2739,11 @@ components:
         - whatsAppAccountId
       properties:
         whatsAppAccountId:
-          type: integer
+          type: string
           description: Id of the WhatsApp Business Account
-          format: int64
+          format: uuid
           example:
-            12312
+            5637b8a7-51e1-47be-ad0b-b242453dcc1b
         name:
           type: string
           description: Name of the WhatsApp Business Account
@@ -2757,10 +2757,15 @@ components:
           type: string
           example:
             c9468969-a3a3-4c17-95f7-1e8b2902ed74
+        managedBy:
+          type: string
+          description: API account that manages this account
+          example: tynteccpaas
       example:
-        whatsAppAccountId: 12312
+        whatsAppAccountId: 5637b8a7-51e1-47be-ad0b-b242453dcc1b
         name: swagger_sample
         templateNamespace: c9468969-a3a3-4c17-95f7-1e8b2902ed74
+        managedBy: tynteccpaas
     WhatsAppPhoneNumbers:
       type: array
       description: List of phone numbers at WhatsApp. Might be empty
@@ -2821,11 +2826,10 @@ components:
           example:
             c9468969-a3a3-4c17-95f7-1e8b2902ed74
         whatsAppAccountId:
-          type: integer
+          type: string
           description: Id of the WhatsApp Business Account the number belongs to.
-          format: int64
-          example:
-            12312
+          format: uuid
+          example: 5637b8a7-51e1-47be-ad0b-b242453dcc1b
       example:
         phoneNumber: 4912345678
         displayPhonenumber: +49 123 45678
@@ -2833,7 +2837,7 @@ components:
         qualityRating: YELLOW
         status: FLAGGED
         templateNamespace: c9468969-a3a3-4c17-95f7-1e8b2902ed74
-        whatsAppAccountId: 12312
+        whatsAppAccountId: 5637b8a7-51e1-47be-ad0b-b242453dcc1b
     WhatsAppTemplateRequest:
       type: object
       description: Definition of additional WhatsApp Template
@@ -2955,11 +2959,10 @@ components:
       description: WhatsApp template
       properties:
         whatsAppAccountId:
-          type: integer
+          type: string
           description: Id of the WhatsApp Business Account the template belongs to.
-          format: int64
-          example:
-            12312
+          format: uuid
+          example: 5637b8a7-51e1-47be-ad0b-b242453dcc1b
         name:
           type: string
           description: Name of the template
@@ -2982,7 +2985,7 @@ components:
               - type: FOOTER
                 text: Your specification team!
       example:
-        whatsAppAccountId: 12312
+        whatsAppAccountId: 5637b8a7-51e1-47be-ad0b-b242453dcc1b
         name: swagger_test
         category: TICKET_UPDATE
         localizations:
