@@ -335,6 +335,29 @@ paths:
           $ref: '#/components/responses/WhatsAppAccountUnknown'
         default:
           $ref: '#/components/responses/Default'
+    post:
+      operationId: waSubmitTemplateForReview
+      summary: Submits a template for review
+      description: Creates a new template that is submitted for review
+      tags:
+        - "WA template management"
+      requestBody:
+        description: |
+          The template for review by Facebook
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WhatsAppTemplateRequest'
+      responses:
+        201:
+          $ref: '#/components/responses/ResourceCreated'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/WhatsAppAccountUnknown'
+        default:
+          $ref: '#/components/responses/Default'
   /channels/whatsapp/accounts/{whatsapp-account-id}/templates/{template-name}:
     parameters:
       - $ref: '#/components/parameters/WhatsAppAccountId'
@@ -353,26 +376,6 @@ paths:
           $ref: '#/components/responses/WhatsAppAccountUnknown'
         default:
           $ref: '#/components/responses/Default'
-    put:
-      tags:
-        - "WA template management"
-      requestBody:
-        description: |
-          Creates a new template or adds localizations for an existing template.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WhatsAppTemplateRequest'
-      responses:
-        204:
-          description: Template request accepted.
-        400:
-          $ref: '#/components/responses/BadRequest'
-        404:
-          $ref: '#/components/responses/WhatsAppAccountUnknown'
-        default:
-          $ref: '#/components/responses/Default'
     delete:
       tags:
         - "WA template management"
@@ -383,7 +386,48 @@ paths:
           $ref: '#/components/responses/WhatsAppAccountUnknown'
         default:
           $ref: '#/components/responses/Default'
-
+  /channels/whatsapp/accounts/{whatsapp-account-id}/templates/{template-name}/localizations:
+    parameters:
+      - $ref: '#/components/parameters/WhatsAppAccountId'
+      - $ref: '#/components/parameters/TemplateName'
+    get:
+      tags:
+        - "WA template management"
+      responses:
+        200:
+          description: Localizations of a template.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LocalizationResponse'
+                minItems: 1
+        404:
+          $ref: '#/components/responses/WhatsAppAccountUnknown'
+        default:
+          $ref: '#/components/responses/Default'
+    post:
+      summary: Add a localization
+      operationId: waTemplateAddLocalization
+      description: Adds a localizations to the template. Will be separately reviewed by Facebook
+      requestBody:
+        description: |
+          The localization for review @ facebook
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocalizationRequest'
+      responses:
+        201:
+          $ref: '#/components/responses/ResourceCreated'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/WhatsAppAccountUnknown'
+        default:
+          $ref: '#/components/responses/Default'
   /channels/whatsapp/phone-numbers:
     get:
       tags:
@@ -962,7 +1006,13 @@ components:
             type: https://httpstatuses.com/403
             title: Forbidden
             status: 403
-
+    ResourceCreated:
+      description: The requested resource was created
+      headers:
+        Location:
+          schema:
+            type: string
+          description: Location URI of the newly created resource
   parameters:
     GroupId:
       name: group-id
@@ -2756,11 +2806,6 @@ components:
         status: FLAGGED
         templateNamespace: c9468969-a3a3-4c17-95f7-1e8b2902ed74
         whatsAppAccountId: 12312
-    WhatsAppTemplateRequests:
-      type: array
-      description: List of newly created WhatsApp templates or additional languages for existing templates
-      items:
-        $ref: '#/components/schemas/WhatsAppTemplateRequest'
     WhatsAppTemplateRequest:
       type: object
       description: Definition of additional WhatsApp Template
@@ -2773,6 +2818,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/LocalizationRequest'
+          minItems: 1
     LocalizationRequest:
       type: object
       description: Request of a localization of a template
