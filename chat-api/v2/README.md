@@ -2,37 +2,64 @@
 
 ## 2.8
 
-This releases introduces the possibility to fetch information about the WhatsApp Business Account including it's Message Templates and PhoneNumbers.
+This release introduces the support of WhatsApp contact messages, the WhatsApp group admin API.
+And also the first release of the applications API. 
 
 ### Features
 
-#### Read WhatsApp Business Account information
+#### Applications API - First Release
 
-You can now fetch information about all WhatsApp Business Accounts available to your API key.
+This release starts with an introduction of applications.
 
-This information provides in this release
+Applications will allow you to control which events should be delivered to your webhook.
 
- - the name reflecting your WhatsApp Business Account and
- - the template namespace
+The level of control is down to the single event. This enables you to route different events to
+different webhooks.
 
-#### Read Template information
+This release only provides the default application, which acts as the global fallback
+in case no other application was configured and attached to the messaging request.
 
-You can now fetch information about templates available to a phone number as well to your WhatsApp Business Account.
+In the future, custom applications will be introduced. These will allow specific webhooks to be used for each set of channels.
 
-The template provides information about
- 
- - name and category 
- - localizations including status and rejection reason
+#### Support for Sending and Receiving Contacts
 
-#### Read Phone Number information
+You can now send a contact to a WhatsApp user as well receive an Inbound Message with content type ``contacts``.  
 
-You can now fetch information about phone numbers available to your WhatsApp Business Account.
+#### WhatsApp Group Admin Management
 
-The information includes
+You can now promote and demote participants of a group to group admins.
 
- - verified name
- - status
- - quality rating
+This change also adds the events 
+
+- ``WhatsAppGroupEvent::userPromoted`` and
+- ``WhatsAppGroupEvent::userDemoted``
+
+indicating the promotion and demotion of a user.
+
+#### WhatsApp Group Icon Events
+
+When a user modifies the group icon, you can now receive the following events: 
+
+- ``WhatsAppGroupEvent::iconChanged`` and 
+ - ``WhatsAppGroupEvent::iconDeleted``
+
+to stay informed of any changes.
+
+#### Deletion of WhatsApp Profile Logo
+
+The logo of the profile can now be removed
+
+#### Public WhatsApp Profile Logo Link 
+
+The logo resource supports now retrieval of the profile logo via the public WhatsApp link.
+
+### Fixes
+
+#### Marking a message as read will not work without the following body
+
+The documentation of marking a message as read, which is a capability of WhatsApp, missed the required body:
+
+    { "status" : "read" }
 
 ## 2.7
 
