@@ -100,13 +100,26 @@ tags:
       - about
   - name: "WA Account management"
     description: |
-      Here you can find infos about your account
-  - name: "WA template management"
+      The WA Account management grants you access to information about the WhatsApp accounts
+      provisioned for you.
+      
+      At the moment it does not support requesting new WhatsApp accounts or editing existing ones.
+
+      The WhatsApp account and it's subresources can *only* be managed by one of your CPaaS API Account.
+
+      Read access to an account is available for all accounts that are associated with a phone number and thus eligible
+      for sending messages.
+  - name: "WA Template management"
     description: |
-      Here you can manage your templates
-  - name: "WA phone number insights"
+      The WA Template management enables you to interact with the templates defined for your WhatsApp account.
+      
+      We support creating or deleting templates and adding new localizations to an existing template.
+      
+      Due to restrictions by WhatsApp editing is not support yet.
+  - name: "WA Phone Number management"
     description: |
-      Here you can find information about your phone numbers
+      The WA Phone Number management is a short path to get information about the status of a phone number.
+      It also provides *read* access to the templates usable by the phone number.
 paths:
   /messages:
     post:
@@ -322,7 +335,7 @@ paths:
       operationId: listTemplatesOfWhatsAppAccount
       summary: List WA account templates
       tags:
-        - "WA template management"
+        - "WA Template management"
       description: List all templates of a WhatsApp account
       responses:
         200:
@@ -340,7 +353,7 @@ paths:
       summary: Submits a template for review
       description: Creates a new template that is submitted for review
       tags:
-        - "WA template management"
+        - "WA Template management"
       requestBody:
         description: |
           The template for review by Facebook
@@ -367,7 +380,7 @@ paths:
       summary: Get one template
       description: Get one template
       tags:
-        - "WA template management"
+        - "WA Template management"
       responses:
         200:
           description: Specified template of the account
@@ -388,7 +401,7 @@ paths:
         After deleting the template a 30 days grace period is starting.
         This is indicated by the `expiresAt` property of the localizations
       tags:
-        - "WA template management"
+        - "WA Template management"
       responses:
         204:
           description: Deletion of the template is pendind now
@@ -405,7 +418,7 @@ paths:
       summary: List localizations of a template
       description: List localizations of a template
       tags:
-        - "WA template management"
+        - "WA Template management"
       responses:
         200:
           description: Localizations of a template.
@@ -425,7 +438,7 @@ paths:
       operationId: waTemplateAddLocalization
       description: Adds a localizations to the template. Will be separately reviewed by Facebook
       tags:
-        - "WA template management"
+        - "WA Template management"
       requestBody:
         description: |
           The localization for review @ facebook
@@ -446,7 +459,7 @@ paths:
   /channels/whatsapp/phone-numbers:
     get:
       tags:
-        - "WA phone number insights"
+        - "WA Phone Number management"
       operationId: listAllWhatsAppPhoneNumbers
       summary: Lists phone numbers
       description: Lists all phone numbers accessible for the given credentials
@@ -467,7 +480,7 @@ paths:
       operationId: getWhatsAppPhoneNumber
       summary: Get one phone number
       tags:
-        - "WA phone number insights"
+        - "WA Phone Number management"
       description: Retrieves information about the phone number
 
       responses:
@@ -488,7 +501,7 @@ paths:
       operationId: getAvailableWhatsAppTemplates
       summary: List available templates
       tags:
-        - "WA phone number insights"
+        - "WA Phone Number management"
       description: Lists all available templates for a phone number
       responses:
         200:
