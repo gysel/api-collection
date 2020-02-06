@@ -126,9 +126,10 @@ tags:
       We support creating or deleting templates and adding new localizations to an existing template.
 
       Due to restrictions by WhatsApp editing is not support yet.
-  - name: "WA Phone Number management"
+  - name: "WA Phone Number insights"
     description: |
-      The WA Phone Number management is a short path to get information about the status of a phone number.
+      The WA Phone Number insights allows you to get information about the status of a phone number.
+
       It also provides *read* access to the templates usable by the phone number.
 
 paths:
