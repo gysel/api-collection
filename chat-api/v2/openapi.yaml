@@ -442,7 +442,7 @@ paths:
   /channels/whatsapp/phone-numbers:
     get:
       tags:
-        - "WA Phone Number management"
+        - "WA Phone Number insights"
       operationId: listAllWhatsAppPhoneNumbers
       summary: Lists phone numbers
       description: Lists all phone numbers accessible for the given credentials
@@ -463,7 +463,7 @@ paths:
       operationId: getWhatsAppPhoneNumber
       summary: Get one phone number
       tags:
-        - "WA Phone Number management"
+        - "WA Phone Number insights"
       description: Retrieves information about the phone number
 
       responses:
@@ -484,7 +484,7 @@ paths:
       operationId: getAvailableWhatsAppTemplates
       summary: List available templates
       tags:
-        - "WA Phone Number management"
+        - "WA Phone Number insights"
       description: Lists all available templates for a phone number
       responses:
         200:
