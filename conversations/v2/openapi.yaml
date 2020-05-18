@@ -169,7 +169,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessageRequest'
+              oneOf:
+                - $ref: '#/components/schemas/SMSMessageRequest'
+                - $ref: '#/components/schemas/ViberRequest'
+                - $ref: '#/components/schemas/WAMessageRequest'
+                - $ref: '#/components/schemas/TyntecEchoMessageRequest'
             examples:
               SMS - Text:
                 $ref: '#/components/examples/SMSTextMessage'
@@ -1883,7 +1887,49 @@ components:
                     text: I take care
 
   schemas:
-    MessageRequest:
+    TyntecEchoMessageRequest:
+      type: object
+      description: The message you would like to send to the echo channel
+      required:
+        - to
+        - channels
+      properties:
+        to:
+          type: string
+          description: |
+            The receipient of the message.
+
+            Could be one of
+              - phone number in international format. In this it should follow the guidelines of [E.164](https://en.wikipedia.org/wiki/E.164) but leading 00 is as well accepted
+              - group id create via the WA Group management
+          example: "+1233423454"
+        channels:
+          type: array
+          description: Channels selected for delivery.
+          example:
+            - tyntecEcho
+          items:
+            type: string
+            enum:
+              - tyntecEcho
+        overrides:
+          $ref: '#/components/schemas/MessageRequestOverrides'
+        context:
+          $ref: '#/components/schemas/MessageRequestContext'
+        tyntecEcho:
+          description: |
+            This channel can be used for integration purposes without sending any message to an actual device.
+            A detailed description is provided on the object definition.
+          allOf:
+            - $ref: '#/components/schemas/TyntecEchoRequest'
+      example:
+        to: "+123234234"
+        channels: ["whatsapp"]
+        whatsapp:
+          from: "545345345"
+          contentType: text
+          text: A simple text message
+    ViberRequest:
       type: object
       description: The message you would like to send
       required:
@@ -1903,33 +1949,93 @@ components:
           type: array
           description: Channels selected for delivery.
           example:
-            - sms
-            - whatsapp
+            - viber
           items:
             type: string
             enum:
-              - sms
-              - whatsapp
-              - tyntecEcho
               - viber
         overrides:
           $ref: '#/components/schemas/MessageRequestOverrides'
         context:
           $ref: '#/components/schemas/MessageRequestContext'
-        defaultContent:
-          $ref: '#/components/schemas/DefaultContent'
-        sms:
-          $ref: '#/components/schemas/SMSRequest'
-        whatsapp:
-          $ref: '#/components/schemas/WhatsappMessageRequest'
-        tyntecEcho:
-          description: |
-            This channel can be used for integration purposes without sending any message to an actual device.
-            A detailed description is provided on the object definition.
-          allOf:
-            - $ref: '#/components/schemas/TyntecEchoRequest'
         viber:
           $ref: '#/components/schemas/ViberMessageRequest'
+      example:
+        to: "+123234234"
+        channels: ["whatsapp"]
+        whatsapp:
+          from: "545345345"
+          contentType: text
+          text: A simple text message
+    SMSMessageRequest:
+      type: object
+      description: The message you would like to send as SMS
+      required:
+        - to
+        - channels
+      properties:
+        to:
+          type: string
+          description: |
+            The receipient of the message.
+
+            Could be one of
+              - phone number in international format. In this it should follow the guidelines of [E.164](https://en.wikipedia.org/wiki/E.164) but leading 00 is as well accepted
+              - group id create via the WA Group management
+          example: "+1233423454"
+        channels:
+          type: array
+          description: Channels selected for delivery.
+          example:
+            - sms
+          items:
+            type: string
+            enum:
+              - sms
+        overrides:
+          $ref: '#/components/schemas/MessageRequestOverrides'
+        context:
+          $ref: '#/components/schemas/MessageRequestContext'
+        sms:
+          $ref: '#/components/schemas/SMSRequest'
+      example:
+        to: "+123234234"
+        channels: ["whatsapp"]
+        whatsapp:
+          from: "545345345"
+          contentType: text
+          text: A simple text message
+    WAMessageRequest:
+      type: object
+      description: The message you would like to send to WhatsApp
+      required:
+        - to
+        - channels
+      properties:
+        to:
+          type: string
+          description: |
+            The receipient of the message.
+
+            Could be one of
+              - phone number in international format. In this it should follow the guidelines of [E.164](https://en.wikipedia.org/wiki/E.164) but leading 00 is as well accepted
+              - group id create via the WA Group management
+          example: "+1233423454"
+        channels:
+          type: array
+          description: Channels selected for delivery.
+          example:
+            - whatsapp
+          items:
+            type: string
+            enum:
+              - whatsapp
+        overrides:
+          $ref: '#/components/schemas/MessageRequestOverrides'
+        context:
+          $ref: '#/components/schemas/MessageRequestContext'
+        whatsapp:
+          $ref: '#/components/schemas/WhatsappMessageRequest'
       example:
         to: "+123234234"
         channels: ["whatsapp"]
